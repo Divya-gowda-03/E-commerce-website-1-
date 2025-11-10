@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Your Cart - E-Shop{% endblock %}
+{% block content %}
+<section class="cart">
+	<h1>Your Cart</h1>
+	{% if cart.items %}
+		<table class="cart-table">
+			<thead>
+				<tr>
+					<th>Item</th>
+					<th>Size</th>
+					<th>Price</th>
+					<th>Qty</th>
+					<th>Subtotal</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in cart.items %}
+					<tr>
+						<td class="cart-item">
+							<img src="{{ item.image_url }}" alt="{{ item.name }}">
+							<span>{{ item.name }}</span>
+						</td>
+						<td>{{ item.size or '-' }}</td>
+						<td>${{ '%.2f'|format(item.price) }}</td>
+						<td>
+							<form action="{{ url_for('update_cart') }}" method="post" class="inline-form">
+								<input type="hidden" name="product_id" value="{{ item.product_id }}">
+								<input type="hidden" name="size" value="{{ item.size }}">
+								<input type="number" name="quantity" min="0" value="{{ item.quantity }}">
+								<button type="submit">Update</button>
+							</form>
+						</td>
+						<td>${{ '%.2f'|format(item.subtotal()) }}</td>
+						<td>
+							<form action="{{ url_for('remove_from_cart') }}" method="post" class="inline-form">
+								<input type="hidden" name="product_id" value="{{ item.product_id }}">
+								<input type="hidden" name="size" value="{{ item.size }}">
+								<button type="submit" class="link danger">Remove</button>
+							</form>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<div class="cart-summary">
+			<p>Total: <strong>${{ '%.2f'|format(cart.total()) }}</strong></p>
+			<form action="{{ url_for('clear_cart') }}" method="post">
+				<button type="submit" class="button-secondary">Clear Cart</button>
+			</form>
+			<button class="button-primary" disabled>Checkout (demo)</button>
+		</div>
+	{% else %}
+		<p>Your cart is empty.</p>
+		<p><a href="{{ url_for('index') }}">Continue shopping</a></p>
+	{% endif %}
+</section>
+{% endblock %}
+
+

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} - E-Shop{% endblock %}
+{% block content %}
+<section class="product-detail">
+	<div class="product-media">
+		<img src="{{ product.image_url }}" alt="{{ product.name }}">
+	</div>
+	<div class="product-info">
+		<h1>{{ product.name }}</h1>
+		<p class="product-meta">{{ product.gender|capitalize }} • {{ product.age_group|capitalize }} • {{ product.category|capitalize }}</p>
+		<p class="product-price">${{ '%.2f'|format(product.price) }}</p>
+		<p class="product-desc">{{ product.description }}</p>
+
+		<form action="{{ url_for('add_to_cart') }}" method="post" class="add-to-cart stacked">
+			<input type="hidden" name="product_id" value="{{ product.id }}">
+			<label>Size</label>
+			<select name="size" required>
+				<option value="" disabled selected>Select size</option>
+				{% for s in product.sizes %}
+					<option value="{{ s }}">{{ s }}</option>
+				{% endfor %}
+			</select>
+			<label>Quantity</label>
+			<input type="number" name="quantity" min="1" value="1">
+			<button type="submit">Add to Cart</button>
+		</form>
+	</div>
+{% endblock %}
+
+

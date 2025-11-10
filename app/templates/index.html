@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}E-Shop - Browse{% endblock %}
+{% block content %}
+<section class="filters">
+	<form action="{{ url_for('index') }}" method="get" class="filters-grid">
+		<div>
+			<label>Gender</label>
+			<select name="gender">
+				<option value="">Any</option>
+				{% for g in FILTERS.genders %}
+					<option value="{{ g }}" {% if request.args.get('gender')==g %}selected{% endif %}>{{ g|capitalize }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div>
+			<label>Age Group</label>
+			<select name="age">
+				<option value="">Any</option>
+				{% for a in FILTERS.age_groups %}
+					<option value="{{ a }}" {% if request.args.get('age')==a %}selected{% endif %}>{{ a|capitalize }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div>
+			<label>Size</label>
+			<select name="size">
+				<option value="">Any</option>
+				{% for s in FILTERS.sizes %}
+					<option value="{{ s }}" {% if request.args.get('size')==s %}selected{% endif %}>{{ s }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div>
+			<label>Min Price</label>
+			<input type="number" name="min_price" step="0.01" value="{{ request.args.get('min_price','') }}">
+		</div>
+		<div>
+			<label>Max Price</label>
+			<input type="number" name="max_price" step="0.01" value="{{ request.args.get('max_price','') }}">
+		</div>
+		<div class="filters-actions">
+			<button type="submit">Apply</button>
+			<a class="button-secondary" href="{{ url_for('index') }}">Reset</a>
+		</div>
+	</form>
+	<p class="filters-hint">Showing {{ products|length }} product(s).</p>
+	</section>
+
+<section class="grid">
+	{% for p in products %}
+		<article class="card">
+			<a href="{{ url_for('product_detail', product_id=p.id) }}" class="image-link">
+				<img src="{{ p.image_url }}" alt="{{ p.name }}">
+			</a>
+			<div class="card-body">
+				<h3 class="card-title">
+					<a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+				</h3>
+				<p class="card-meta">{{ p.gender|capitalize }} • {{ p.age_group|capitalize }} • {{ p.category|capitalize }}</p>
+				<p class="price">${{ '%.2f'|format(p.price) }}</p>
+				<form action="{{ url_for('add_to_cart') }}" method="post" class="add-to-cart">
+					<input type="hidden" name="product_id" value="{{ p.id }}">
+					<select name="size" required>
+						<option value="" disabled selected>Size</option>
+						{% for s in p.sizes %}
+							<option value="{{ s }}">{{ s }}</option>
+						{% endfor %}
+					</select>
+					<input type="number" name="quantity" min="1" value="1">
+					<button type="submit">Add to Cart</button>
+				</form>
+			</div>
+		</article>
+	{% endfor %}
+</section>
+{% endblock %}
+
+
